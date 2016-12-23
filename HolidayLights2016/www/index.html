@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.5/p5.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.5/addons/p5.dom.js"></script>
+		<script>
+	var switchButton, twinkleButton, result;
+
+function setup() {
+	noCanvas();
+	var label = createDiv("Twinkler");
+	label.position(150, 65);
+  twinkleButton = createButton('Twinkle');
+  twinkleButton.position(300, 65);
+  twinkleButton.mousePressed(twinkle);
+	lightsDiv = createDiv("Lights: ");
+	lightsDiv.position(150, 95);
+  switchButton = createButton('off');
+  switchButton.position(300, 95);
+  switchButton.mousePressed(switchLights);
+}
+
+function twinkle() {
+	result = loadStrings("/mailbox/twinkle");
+}
+
+function switchLights() {
+	var state = switchButton.html();
+	result = loadStrings("/mailbox/" + state);
+	if (state === 'on') {
+		switchButton.html('off')
+	}
+ 	if (state === 'off') {
+		switchButton.html('on');
+	}
+}
+	</script>
+	</head>
+	<body>
+	</body>
+</html>
