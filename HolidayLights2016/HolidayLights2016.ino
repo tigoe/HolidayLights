@@ -49,7 +49,7 @@ void setup()  {
   Mailbox.begin();  // initialize Mailbox
   Console.begin();  // initialize Console library (for debugging)
   strand.begin();    // initialize neoPixel strand
-  
+
   Console.println("Starting");
   randomSeed(millis() + analogRead(A0));
   flickerTimer.setInterval(flickerPixels, 20);
@@ -59,6 +59,7 @@ void setup()  {
 
 void loop() {
   String message;
+  unsigned long twinkleTime = random(3000) + 3000;
   // read the next message present in the queue
   while (Mailbox.messageAvailable()) {
     Mailbox.readMessage(message);
@@ -76,7 +77,8 @@ void loop() {
     }
 
     if (!newYears) {
-      twinkleTimer.setDelay(random(3000) + 3000);
+      twinkleTimer.setDelay(twinkleTime);
+      twinkleTimer.reset();
     }
     if (!running) turnOff();
   }
@@ -92,7 +94,7 @@ void loop() {
 boolean turnOff() {
   strand.clear();       // clear the strand
   twinkleTimer.stop();  // stop the timers
-  flickerTimer.stop(); 
+  flickerTimer.stop();
   return false;
 }
 
@@ -100,11 +102,12 @@ boolean turnOff() {
   this function creates the twinkle effect:
 */
 void twinkle() {
+  Console.println("Twinkle");
   // pick a random pixel:
-  int thisPixel = random(numPixels) - 1;  
+  int thisPixel = random(numPixels);
   // if it's the same as the last one flickered, don't do anything more:
-  if (thisPixel == lastPixel) return;   
-  // set the pixel's color:  
+  if (thisPixel == lastPixel) return;
+  // set the pixel's color:
   pixelColor[thisPixel] = twinkleColor;
   // save pixel number for comparison next time:
   lastPixel = thisPixel;
@@ -118,7 +121,7 @@ boolean beginString() {
 
   //  set the pixels with colors from the keyColors array:
   for (int pixel = 0; pixel < numPixels; pixel++) {
-    pixelColor[pixel] = keyColors[random(4)];        // set the pixel color
+    pixelColor[pixel] = keyColors[random(numColors)];        // set the pixel color
     strand.setPixelColor(pixel, pixelColor[pixel]);  // set pixel using keyColor
   }
   return true;
@@ -180,7 +183,7 @@ unsigned long compare(unsigned long thisColor, unsigned long thatColor) {
 */
 void happyNewYear() {
   Console.println("Happy New Year!");
-  
+
   // save the old keyColors:
   for (int i = 0; i < numColors; i++) {
     referenceColors[i] = keyColors[i];
