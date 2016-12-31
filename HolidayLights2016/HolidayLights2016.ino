@@ -40,6 +40,9 @@ Interval flickerTimer;
 Interval twinkleTimer;
 Interval newYearTimer;
 
+unsigned long twinkles = 0;   // counters for twinkles and flickers
+unsigned long flickers = 0;
+
 // state variables:
 boolean running = true;
 boolean newYears = false;
@@ -102,7 +105,7 @@ boolean turnOff() {
   this function creates the twinkle effect:
 */
 void twinkle() {
-  Console.println("Twinkle");
+  twinkles++;
   // pick a random pixel:
   int thisPixel = random(numPixels);
   // if it's the same as the last one flickered, don't do anything more:
@@ -131,6 +134,7 @@ boolean beginString() {
   this function creates the flicker effect:
 */
 void flickerPixels() {
+  flickers++;
   // iterate over all pixels:
   for (int thisPixel = 0; thisPixel < numPixels; thisPixel++) {
     // if the target color matches the current color for this pixel,
@@ -219,6 +223,8 @@ void newYearsOff() {
   // reset twinkle delay:
   twinkleTimer.setDelay(random(3000) + 3000);
   flickerTimer.setDelay(20);
+  twinkleTimer.reset();
+  flickerTimer.reset();
   newYears = false;
 }
 
