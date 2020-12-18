@@ -160,12 +160,12 @@ void loop() {
     if (Serial) Serial.println("client disconnected");
   }
   // fade pixels back to base color one point per 30ms:
-  if ((status == "on") && (millis() % 30 < 2)) {
+  if (status == "on" && (millis() % 30 < 2)) {
     fadePixels();
   }
   // random twinkle. It's very rare:
-  if ((status == "on") && (random(50) == millis() % 1000)) {
-    twinkle();
+  if (status == "on" && (random(50) == millis() % 1000)) {
+    //    twinkle();
   }
   // update the tree:
   if (status == "on") tree.show();
@@ -180,10 +180,13 @@ void loop() {
       lastPixelOff = millis();
       pixelsShutdown++;
       if (Serial) Serial.println(pixelsShutdown);
+      tree.show();
     }
-    if (pixelsShutdown >= pixelCount) {
+    if (pixelsShutdown == pixelCount) {
       status = "off";
-       tree.clear();
+    }
+    if (status == "off") {
+      tree.clear();
     }
   }
 }
@@ -277,8 +280,8 @@ void sendResponse(WiFiClient client) {
   client.print("<!DOCTYPE html><html lang=\"en\"><head>");
   client.print("</head><body>");
   client.print("<h1>" + status + "</h1>");
-  client.print("Tree time: " + getTimeStamp());
-  client.print("<br>Click <a href=\"/on\">here</a> to turn on the tree on<br>");
+  client.print("Tree time: " + getTimeStamp() + "<br>");
+  client.print("Click <a href=\"/on\">here</a> to turn on the tree on<br>");
   client.print("Click <a href=\"/off\">here</a> to turn the tree off<br>");
   client.print("</body></html>");
 
@@ -331,4 +334,8 @@ void crontab() {
       rtc.getMinutes() == 45) {
     status == "off";
   }
+  //# during weekend operating hours, reshuffle the lights:
+  //30 6-7,17-22 * * 1-5 curl 'http://localhost/mailbox/on'
+  //# reshuffle every hour on weekend:
+  //30 7-22 * * 0,6 curl 'http://localhost/mailbox/on'
 }
