@@ -5,6 +5,7 @@
 #include <RTCZero.h>
 
 #include "arduino_secrets.h"
+#include "index.h"
 
 char mdnsName[] = "tree";
 WiFiServer server(80);        // make an instance of the server class
@@ -183,7 +184,9 @@ void loop() {
     }
     if (pixelsShutdown >= pixelCount) {
       status = "off";
-       tree.clear();
+      tree.clear();
+      // reset pixelsShutdown for next shutdown:
+      pixelsShutdown = 0;
     }
   }
 }
@@ -272,15 +275,13 @@ void sendResponse(WiFiClient client) {
   String response = "HTTP/1.1 200 OK\n";
   response += "Content-type:text/html\n";
   client.println();
+  // add the tree status to the HTML:
+  html.replace("TREESTATUS", status);
+  // add the current  time:
+  html.replace("TIME", getTimeStamp());
 
   // the content of the HTTP response follows the header:
-  client.print("<!DOCTYPE html><html lang=\"en\"><head>");
-  client.print("</head><body>");
-  client.print("<h1>" + status + "</h1>");
-  client.print("Tree time: " + getTimeStamp());
-  client.print("<br>Click <a href=\"/on\">here</a> to turn on the tree on<br>");
-  client.print("Click <a href=\"/off\">here</a> to turn the tree off<br>");
-  client.print("</body></html>");
+  client.print(html);
 
   // The HTTP response ends with another blank line:
   client.println();
@@ -298,7 +299,6 @@ String getTimeStamp() {
   timestamp += ":";
   if (rtc.getSeconds() <= 9) timestamp += "0";
   timestamp += rtc.getSeconds();
-  timestamp += " GMT";
   return timestamp;
 }
 
