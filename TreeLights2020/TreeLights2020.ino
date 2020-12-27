@@ -285,7 +285,6 @@ void sendResponse(WiFiClient client) {
 
   // The HTTP response ends with another blank line:
   client.println();
-
 }
 
 // format the time as hh:mm:ss
